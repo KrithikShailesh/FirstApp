@@ -1,43 +1,48 @@
-import { StatusBar } from 'expo-status-bar';
 import React, {useState} from 'react';
-import { StyleSheet, Text, TextInput, View, Button, ScrollView, FlatList } from 'react-native';
+import { StyleSheet, View, Button, ScrollView, FlatList } from 'react-native';
+import ListItems from './components/ListItems';
+import NameInput from './components/NameInput';
 
 export default function App() {
-  const [getName, setName]=useState('');
+  
   const [enteredName, setEnteredName]=useState([]);
+  const [isAddMode, setIsAddMode] = useState(false);
 
-  const setNameHandler = (enteredText) =>{
-    setName(enteredText);
+  const addNameHandler = nameTitle => {
+    setEnteredName(currentName => [...currentName, 
+      {id: Math.random().toString(), value: nameTitle}]);
+
+      setIsAddMode(false);
   };
   
-  const setListHandler = () =>{
-    setEnteredName(currName => [...currName, {id: Math.random().toString(), val: getName}] );
+  const removeNameHandler = nameId => {
+    setEnteredName(currentName => {
+      return currentName.filter(name => name.id !== nameId);
+    });
+  };
+  
+  const cancelNameAdditionHandler = () =>{
+    setIsAddMode(false);
   };
   
   return (
     
     <View style={styles.screen}>
-      <View style={{flexDirection:'column',padding: 10}}>
-      <TextInput 
-      style={styles.input} 
-      placeholder="  Name"
-      onChangeText={setNameHandler}
-      value={getName}/>
-      <Button title="Add" onPress={setListHandler}/>
-      </View>
-      <View>
+      
+      <Button title="Add New Name" onPress={() => setIsAddMode(true)}/>
+      <NameInput visible={isAddMode} onAddName={addNameHandler} onCancel={cancelNameAdditionHandler}/>
       <FlatList 
       keyExtractor={(item, index) => item.id}
       data={enteredName}
       renderItem={itemData => (
-        <View style={styles.listItem}>
-          <Text>{itemData.item.val}</Text>
-        </View>
+        <ListItems 
+        id={itemData.item.id}
+        title={itemData.item.value}
+        onDelete={removeNameHandler}
+        />
       )}
       />
       </View>
-      
-    </View>
     
   );
 }
@@ -48,16 +53,5 @@ const styles = StyleSheet.create({
   screen:{
     padding: 50
   },
-  input: {
-    borderWidth: 1,
-    borderColor: 'black'
-  },
-  listItem:{
-    borderWidth: 1,
-    borderColor: 'black',
-    backgroundColor: '#00bfff',
-    padding: 10,
-    marginTop: 10,
-    marginBottom:10
-  }
-})
+  
+});
