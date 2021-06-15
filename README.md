@@ -2,7 +2,7 @@
 
 This is my first app build using React Native.
 
-##Learned So Far:
+## Learned So Far:
 
 1. FlexBox and Layouts.
 2. Styling.
